@@ -80,7 +80,7 @@ class ManagedContainer:
             "no-new-privileges",
             "--read-only",
             "--tmpfs",
-            "/tmp:noexec,nosuid,size=256m",  # noqa: S108
+            "/tmp:noexec,nosuid,size=256m",  # noqa: S108  # nosec B108
             "--user",
             "huntersec",
         ]

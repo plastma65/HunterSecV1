@@ -271,7 +271,7 @@ exclude_lines = [
 
 [tool.bandit]
 exclude_dirs = ["tests", "build", "dist"]
-skips = ["B101"]  # assert_used (we keep asserts in non-test code only with rationale)
+skips = ["B101", "B108"]  # B101: assert_used; B108: /tmp in Docker tmpfs args (hardened)
 
 [tool.bandit.assert_used]
 exclude = ["*/tests/*"]
