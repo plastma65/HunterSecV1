@@ -1,0 +1,27 @@
+HunterSecV1
+Copyright 2026 Lozens (trantuananh.businessman@gmail.com)
+
+This product includes software developed as part of the HunterSecV1 open-source
+project (https://github.com/Lozens/HunterSecV1).
+
+This software is intended SOLELY for authorized security testing, education,
+CTF participation, and bug bounty programs within their published scope.
+
+Misuse — including unauthorized access, denial of service, data theft, or any
+illegal activity — is strictly prohibited. The authors and contributors disclaim
+all responsibility for misuse. See `docs/ethics.md` for the acceptable-use policy.
+
+This product makes use of the following third-party tools/libraries which may
+have their own licenses (a full list with versions is generated at build time
+as the SBOM, see `dist/sbom.spdx.json` on each release):
+
+- LangGraph (MIT) — https://github.com/langchain-ai/langgraph
+- Anthropic SDK (MIT) — https://github.com/anthropics/anthropic-sdk-python
+- OpenAI SDK (Apache 2.0) — https://github.com/openai/openai-python
+- Pydantic (MIT) — https://github.com/pydantic/pydantic
+- Typer (MIT) — https://github.com/tiangolo/typer
+- Rich (MIT) — https://github.com/Textualize/rich
+- httpx (BSD-3-Clause) — https://github.com/encode/httpx
+- structlog (MIT/Apache 2.0) — https://github.com/hynek/structlog
+- pytest (MIT) — https://github.com/pytest-dev/pytest
+- Hypothesis (MPL-2.0) — https://github.com/HypothesisWorks/hypothesis

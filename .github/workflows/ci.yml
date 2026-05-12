@@ -1,0 +1,141 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev, "feat/**", "fix/**"]
+  pull_request:
+
+env:
+  PYTHON_VERSION: "3.11"
+  UV_VERSION: "0.4.0"
+
+jobs:
+  # ── Lint ────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint (ruff · mypy · bandit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install uv
+        run: pip install uv==${{ env.UV_VERSION }}
+
+      - name: Install dev dependencies
+        run: uv pip install --system -e ".[dev]"
+
+      - name: ruff check
+        run: ruff check src/ tests/
+
+      - name: ruff format check
+        run: ruff format --check src/ tests/
+
+      - name: mypy strict
+        run: mypy --strict src/
+
+      - name: bandit security scan
+        run: bandit -c pyproject.toml -r src/
+
+  # ── Unit Tests ──────────────────────────────────────────────────────────────
+  test:
+    name: Unit tests + coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install uv
+        run: pip install uv==${{ env.UV_VERSION }}
+
+      - name: Install dev dependencies
+        run: uv pip install --system -e ".[dev]"
+
+      - name: Run unit tests with coverage
+        run: |
+          pytest tests/unit/ \
+            -m "not integration and not e2e" \
+            --cov=src/huntersec \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            -v
+
+      - name: Enforce safety module coverage ≥ 95%
+        run: |
+          python - <<'EOF'
+          import xml.etree.ElementTree as ET
+          import sys
+
+          tree = ET.parse("coverage.xml")
+          root = tree.getroot()
+
+          failed = False
+          for pkg in root.iter("package"):
+              name = pkg.get("name", "")
+              if "safety" in name:
+                  rate = float(pkg.get("line-rate", 0)) * 100
+                  print(f"  safety coverage ({name}): {rate:.1f}%")
+                  if rate < 95:
+                      print(f"  FAIL: {name} coverage {rate:.1f}% < 95%", file=sys.stderr)
+                      failed = True
+
+          if failed:
+              sys.exit(1)
+          print("Safety coverage check passed.")
+          EOF
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+          fail_ci_if_error: false
+
+  # ── Security ────────────────────────────────────────────────────────────────
+  security:
+    name: Security (pip-audit · detect-secrets)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install uv
+        run: pip install uv==${{ env.UV_VERSION }}
+
+      - name: Install dev dependencies
+        run: uv pip install --system -e ".[dev]"
+
+      - name: pip-audit
+        run: pip-audit --strict
+        continue-on-error: true  # advisory only until baseline established
+
+      - name: detect-secrets
+        run: detect-secrets scan --baseline .secrets.baseline
+
+  # ── Docker Build ─────────────────────────────────────────────────────────────
+  build:
+    name: Docker build (linux/amd64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build Kali sandbox image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.kali
+          platforms: linux/amd64
+          push: false
+          tags: huntersec/kali:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

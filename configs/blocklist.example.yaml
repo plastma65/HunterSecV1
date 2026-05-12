@@ -1,0 +1,27 @@
+# HunterSecV1 — Extended Blocklist Example
+# This file EXTENDS the baked-in safety patterns (those cannot be disabled).
+# Copy to configs/blocklist.yaml and add project-specific restrictions.
+#
+# All patterns are Python regex strings matched against the full command string.
+
+version: 1
+
+# Additional regex patterns to block (baked-in patterns always apply too)
+forbidden_patterns:
+  # Prevent recursive web spidering that could overload targets
+  - '\bwget\b.*-r\b.*--level=[5-9]\d*'
+  # Prevent running mass-exploit scripts against all hosts
+  - '\bmetasploit\b.*--all-targets'
+  # Block any attempt to email exfiltration
+  - '\bsendmail\b.*--to.*@.*--attach'
+  # Block crypto mining (common in compromised boxes)
+  - '\b(?:xmrig|xmr-stak|minerd)\b'
+
+# Additional binaries to block entirely
+forbidden_binaries:
+  - "cryptominer"
+
+# Specific flags that are never permitted regardless of tool
+forbidden_flags:
+  - "--syn-flood"
+  - "--udp-flood"

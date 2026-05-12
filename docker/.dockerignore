@@ -1,0 +1,46 @@
+# Prevent secrets and sensitive files from entering build context
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+build/
+
+# Test artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+coverage.xml
+.coverage
+
+# Secrets and keys
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.secrets
+.secrets.baseline
+
+# Data (audit logs, LLM cache — never bake into image)
+data/
+
+# Git
+.git/
+.gitignore
+
+# Docs
+docs/
+*.md
+
+# CI
+.github/
+
+# IDE
+.idea/
+.vscode/
+*.swp

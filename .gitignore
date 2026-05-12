@@ -1,0 +1,109 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+wheels/
+pip-wheel-metadata/
+*.manifest
+*.spec
+
+# Virtual envs
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# uv / poetry
+.uv/
+.poetry/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.tox/
+.nox/
+.hypothesis/
+
+# Type checkers / linters
+.mypy_cache/
+.pyre/
+.pytype/
+.ruff_cache/
+.bandit
+.semgrep/cache/
+
+# Pre-commit
+.pre-commit-trash/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docs
+site/
+docs/_build/
+
+# HunterSec specific — sensitive data
+# Real scope files (only example is committed)
+configs/scope.yaml
+configs/*.local.yaml
+
+# Audit logs and reports (may contain target data)
+data/audit/
+data/reports/
+data/llm_cache/
+data/sessions/
+data/memory.db
+data/*.sqlite
+
+# Anything matching secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+.secrets/
+
+# Docker
+.docker/
+
+# OS
+.DS_Store
+desktop.ini
+
+# Generated
+*.log
+*.bak
+*.tmp
+
+# Allow these specifically (override above)
+!.gitkeep
+!configs/scope.example.yaml
+!data/.gitkeep_dir/
+
+# AI agent instruction files (not for public repo)
+CLAUDE.md
+docs/progress_report.md
+.claude/

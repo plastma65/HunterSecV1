@@ -1,0 +1,32 @@
+# HunterSecV1 — Scope File Example
+# Copy to configs/scope.yaml and edit before running.
+#
+# Only targets listed here will be authorized for testing.
+# The safety layer refuses to proceed if scope.yaml is missing.
+
+version: 1
+name: "HackTheBox Lab"
+program: "HackTheBox"
+
+# CIDR ranges of authorized targets
+networks:
+  - "10.10.10.0/24"   # HTB machines (classic range)
+  - "10.10.11.0/24"   # HTB machines (extended range)
+
+# Individual hostnames / domains (subdomains are also matched)
+hostnames:
+  - "target.htb"
+  - "lab.htb"
+
+# URL prefixes (only these base URLs are authorized)
+urls: []
+
+# Explicitly out-of-scope — takes priority over networks / hostnames
+out_of_scope:
+  - "10.10.10.1"   # network gateway — not a target
+  - "10.10.10.2"   # HTB infrastructure — do NOT scan
+
+notes: |
+  Always verify the active machine IP before scanning.
+  Pause between 10.10.10.x and 10.10.11.x machine rotations.
+  HTB rules: only attack the assigned machine, no pivoting to other users.
