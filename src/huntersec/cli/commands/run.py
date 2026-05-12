@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 
 import structlog
 import typer
 
-from huntersec.exceptions import ScopeNotConfiguredError
+from huntersec.exceptions import OutOfScopeError, ScopeNotConfiguredError
 from huntersec.safety.audit import AuditLogger
 from huntersec.safety.scope import ScopeValidator
 from huntersec.settings import SafetySettings
@@ -37,6 +38,12 @@ def run(
         "-p",
         help="LLM provider to use (anthropic|openai|ollama).",
     ),
+    objective: str = typer.Option(
+        "recon",
+        "--objective",
+        "-o",
+        help="Assessment objective: recon | exploit | ctf.",
+    ),
 ) -> None:
     """Run an autonomous security assessment against TARGET.
 
@@ -56,13 +63,11 @@ def run(
         typer.secho(f"ERROR: {exc}", fg=typer.colors.RED, err=True)
         raise typer.Exit(2) from exc
 
-    if not validator.is_in_scope(target):
-        typer.secho(
-            f"ERROR: target {target!r} is not in the scope defined by {scope}.",
-            fg=typer.colors.RED,
-            err=True,
-        )
-        raise typer.Exit(1)
+    try:
+        validator.assert_in_scope(target)
+    except OutOfScopeError as exc:
+        typer.secho(f"ERROR: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(1) from exc
 
     audit = AuditLogger(settings.audit_log_dir)
     audit.log_event(
@@ -72,15 +77,16 @@ def run(
             "scope_file": str(scope),
             "dry_run": not execute,
             "provider": provider,
+            "objective": objective,
         },
     )
-
     log.info(
         "session.start",
         target=target,
         scope=str(scope),
         dry_run=not execute,
         provider=provider,
+        objective=objective,
     )
 
     if not execute:
@@ -88,16 +94,35 @@ def run(
             "\n[DRY-RUN] Safety checks passed. Re-run with --execute to launch the agent.\n",
             fg=typer.colors.YELLOW,
         )
-        typer.echo(f"  Target  : {target}")
-        typer.echo(f"  Scope   : {scope}")
-        typer.echo(f"  Provider: {provider}")
-        typer.echo(f"  Audit   : {audit.path}")
+        typer.echo(f"  Target    : {target}")
+        typer.echo(f"  Scope     : {scope}")
+        typer.echo(f"  Objective : {objective}")
+        typer.echo(f"  Provider  : {provider}")
+        typer.echo(f"  Audit     : {audit.path}")
         return
 
-    # Live execution path — agent loop would be wired here
+    # Live execution — wire Session and run the LangGraph agent
     typer.secho(
-        f"\n[LIVE] Starting agent against {target!r} ...",
+        f"\n[LIVE] Starting agent against {target!r} ...\n",
         fg=typer.colors.GREEN,
     )
-    typer.echo("Agent integration not yet wired — extend this command with LangGraph agent.")
-    audit.log_event("session.end", {"target": target, "reason": "stub"})
+    try:
+        from huntersec.core.session import Session
+        from huntersec.settings import Settings
+
+        app_settings = Settings(safety=SafetySettings(scope_file=scope))
+        session = Session(
+            target=target,
+            scope_file=scope,
+            objective=objective,
+            settings=app_settings,
+            provider=provider,
+        )
+        report_path = asyncio.run(session.run())
+        typer.secho(f"\n✓ Report saved: {report_path}", fg=typer.colors.GREEN)
+    except (ScopeNotConfiguredError, OutOfScopeError) as exc:
+        typer.secho(f"ERROR: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(1) from exc
+    except RuntimeError as exc:
+        typer.secho(f"ERROR: Session failed — {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(3) from exc

@@ -145,6 +145,9 @@ ignore = [
     "D213",  # multi-line-summary-second-line (conflicts with D212)
     "PLR0913", # too many arguments — sometimes necessary in adapters
     "TRY003",  # long messages in raise — common in our exceptions
+    "TRY300",  # consider-else — explicit flow is clearer in node functions
+    "TRY301",  # abstract-raise — inline raises are fine in our retry loops
+    "TRY004",  # type-check-without-type-error — ValueError is correct for bad LLM output
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -153,6 +156,8 @@ ignore = [
 "src/huntersec/cli/**/*.py" = ["B008", "PLC0415"]
 "src/huntersec/llm/anthropic.py" = ["PLC0415"]
 "src/huntersec/llm/openai_provider.py" = ["PLC0415"]
+"src/huntersec/tools/registry.py" = ["PLC0415"]
+"src/huntersec/core/session.py" = ["PLC0415"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

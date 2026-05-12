@@ -100,9 +100,10 @@ class BlocklistChecker:
                 raise BlocklistedCommandError(
                     f"Command matches forbidden pattern {pat.pattern!r}: {command!r}"
                 )
-        # Token match
+        # Token match — truncate to avoid O(n²) behaviour on pathological inputs
+        _SHLEX_LIMIT = 4096
         try:
-            tokens = shlex.split(command)
+            tokens = shlex.split(command[:_SHLEX_LIMIT])
         except ValueError:
             # Malformed quoting — treat as suspicious
             raise BlocklistedCommandError(
