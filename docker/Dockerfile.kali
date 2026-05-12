@@ -1,0 +1,58 @@
+# HunterSecV1 — Kali Linux sandbox image
+#
+# Multi-stage build:
+#   Stage 1 (base)  — install OS tools
+#   Stage 2 (final) — create non-root user, copy only what's needed
+#
+# PRODUCTION NOTE (CLAUDE.md §5.7): pin the base image by digest, not tag.
+# Run: docker pull kalilinux/kali-rolling && docker inspect --format='{{index .RepoDigests 0}}' kalilinux/kali-rolling
+# Then replace the tag below with: kalilinux/kali-rolling@sha256:<digest>
+
+# ── Stage 1: tool installation ─────────────────────────────────────────────────
+FROM kalilinux/kali-rolling:latest AS base
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+        # Network reconnaissance
+        nmap \
+        netcat-traditional \
+        curl \
+        wget \
+        dnsutils \
+        whois \
+        # Web tools
+        nikto \
+        # Scripting
+        python3 \
+        python3-pip \
+        # Utilities
+        jq \
+        xxd \
+        file \
+        binutils \
+        # Cleanup
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Stage 2: hardened final image ──────────────────────────────────────────────
+FROM base AS final
+
+# Create non-root user (matches --user huntersec in SandboxExecutor)
+RUN groupadd --gid 1001 huntersec && \
+    useradd --uid 1001 --gid 1001 --no-create-home --shell /usr/sbin/nologin huntersec
+
+# Read-only working directory for any tool output
+RUN mkdir -p /work && chown huntersec:huntersec /work
+WORKDIR /work
+
+# Drop to non-root
+USER huntersec
+
+# Healthcheck: verify nmap is available
+HEALTHCHECK --interval=30s --timeout=5s --retries=2 \
+    CMD nmap --version > /dev/null 2>&1
+
+# Default: do nothing (commands are injected via docker run <image> <cmd>)
+CMD ["bash", "--norc", "--noprofile"]
