@@ -24,7 +24,7 @@ import json
 import os
 import threading
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Self
 
@@ -74,19 +74,22 @@ class AuditLogger:
         self._seq = 0
         self._prev_hash = _GENESIS_HASH
         self._lock = threading.Lock()
-        date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        date = datetime.now(UTC).strftime("%Y-%m-%d")
         self._path = self._dir / f"{date}_{self._session_id}.jsonl"
 
     @classmethod
     def for_session(cls, log_dir: Path, session_id: str) -> Self:
+        """Create a logger bound to a specific session ID."""
         return cls(log_dir, session_id=session_id)
 
     @property
     def path(self) -> Path:
+        """Absolute path to the active JSONL log file."""
         return self._path
 
     @property
     def session_id(self) -> str:
+        """Session identifier stamped on every emitted event."""
         return self._session_id
 
     def log_event(self, event: str, payload: dict[str, Any] | None = None) -> AuditEvent:
@@ -94,7 +97,7 @@ class AuditLogger:
         with self._lock:
             self._seq += 1
             row = {
-                "ts": datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace(
+                "ts": datetime.now(UTC).isoformat(timespec="milliseconds").replace(
                     "+00:00", "Z"
                 ),
                 "session_id": self._session_id,

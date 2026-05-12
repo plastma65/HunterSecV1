@@ -8,11 +8,11 @@ Coverage target: 95% line + branch (see CLAUDE.md §3.1).
 
 from __future__ import annotations
 
-from huntersec.safety.audit import AuditLogger, AuditEvent
+from huntersec.safety.audit import AuditEvent, AuditLogger
 from huntersec.safety.blocklist import BlocklistChecker
-from huntersec.safety.filter import SafetyFilter, SafetyDecision
+from huntersec.safety.filter import SafetyDecision, SafetyFilter
 from huntersec.safety.ratelimit import RateLimiter
-from huntersec.safety.scope import ScopeValidator, ScopeFile
+from huntersec.safety.scope import ScopeFile, ScopeValidator
 
 __all__ = [
     "AuditEvent",

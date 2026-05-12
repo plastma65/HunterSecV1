@@ -7,12 +7,17 @@ from pathlib import Path
 import structlog
 import typer
 
+from huntersec.exceptions import ScopeNotConfiguredError
+from huntersec.safety.audit import AuditLogger
+from huntersec.safety.scope import ScopeValidator
+from huntersec.settings import SafetySettings
+
 log: structlog.stdlib.BoundLogger = structlog.get_logger("cli.run")
 
 
 def run(
     target: str = typer.Option(..., "--target", "-t", help="Target IP, hostname, or URL."),
-    scope: Path = typer.Option(  # noqa: B008
+    scope: Path = typer.Option(
         ...,
         "--scope",
         "-s",
@@ -42,11 +47,6 @@ def run(
     The scope file MUST exist and TARGET must be in scope — the session is
     aborted otherwise.
     """
-    from huntersec.exceptions import ScopeNotConfiguredError
-    from huntersec.safety.audit import AuditLogger
-    from huntersec.safety.scope import ScopeValidator
-    from huntersec.settings import SafetySettings, SandboxSettings
-
     settings = SafetySettings(scope_file=scope)
 
     # Validate scope before doing anything else

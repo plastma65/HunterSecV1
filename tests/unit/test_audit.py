@@ -6,9 +6,7 @@ import json
 import threading
 from pathlib import Path
 
-import pytest
-
-from huntersec.safety.audit import AuditLogger, _GENESIS_HASH, _hash
+from huntersec.safety.audit import _GENESIS_HASH, AuditEvent, AuditLogger
 
 
 def test_audit_logger_creates_log_file(tmp_path: Path) -> None:
@@ -136,8 +134,6 @@ def test_audit_logger_thread_safe(tmp_path: Path) -> None:
 
 
 def test_audit_logger_returns_audit_event_model(tmp_path: Path) -> None:
-    from huntersec.safety.audit import AuditEvent
-
     logger = AuditLogger(tmp_path / "audit")
     ev = logger.log_event("model.check")
     assert isinstance(ev, AuditEvent)

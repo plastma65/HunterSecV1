@@ -9,7 +9,6 @@ import pytest
 from huntersec.exceptions import OutOfScopeError, ScopeNotConfiguredError
 from huntersec.safety.scope import ScopeFile, ScopeValidator
 
-
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 
@@ -141,10 +140,10 @@ def test_scope_validator_rejects_prompt_injection_string() -> None:
 
 
 def test_scope_validator_rejects_unicode_homoglyph() -> None:
-    # Cyrillic 'а' (U+0430) instead of Latin 'a' in domain — different byte sequence
+    # Cyrillic 'а' (U+0430) instead of Latin 'a' in domain — different byte sequence  # noqa: RUF003
     v = make_validator()
     with pytest.raises(OutOfScopeError):
-        v.assert_in_scope("tаrget.htb")  # 'а' is Cyrillic here
+        v.assert_in_scope("tаrget.htb")  # 'а' is Cyrillic here  # noqa: RUF001, RUF003
 
 
 # ── Load from file ─────────────────────────────────────────────────────────────
@@ -167,5 +166,5 @@ def test_scope_validator_load_from_valid_yaml(tmp_path: Path) -> None:
 
 
 def test_scope_file_rejects_invalid_cidr() -> None:
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         ScopeFile(networks=["not-a-cidr"])

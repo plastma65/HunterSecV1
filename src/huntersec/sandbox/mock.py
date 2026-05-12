@@ -50,7 +50,7 @@ class MockSandboxExecutor:
     async def run(
         self,
         command: str,
-        timeout: int | None = None,  # noqa: ARG002
+        timeout: int | None = None,  # noqa: ASYNC109
     ) -> ExecutionResult:
         """Return the next scripted result (or default).
 

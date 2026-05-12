@@ -111,7 +111,7 @@ class AnthropicProvider:
             log.warning("llm.anthropic.rate_limit", model=selected_model)
             raise LLMRateLimitError(f"Anthropic rate limit: {exc}") from exc
         except anthropic.APIError as exc:
-            log.error("llm.anthropic.api_error", model=selected_model, error=str(exc))
+            log.exception("llm.anthropic.api_error", model=selected_model, error=str(exc))
             raise LLMError(f"Anthropic API error: {exc}") from exc
 
         content_text = ""

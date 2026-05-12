@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
+import contextlib
 from pathlib import Path
 
 import pytest
 
 from huntersec.exceptions import BlocklistedCommandError
-from huntersec.safety.blocklist import BlocklistChecker, BlocklistFile
-
+from huntersec.safety.blocklist import BlocklistChecker
 
 # ── Allowed commands (should not raise) ───────────────────────────────────────
 
@@ -182,7 +182,5 @@ def test_blocklist_checker_with_long_command_does_not_hang() -> None:
     # 10 MB command — should complete quickly
     big_cmd = "echo " + "A" * (10 * 1024 * 1024)
     # Should either pass or raise BlocklistedCommandError, not hang
-    try:
+    with contextlib.suppress(BlocklistedCommandError, MemoryError):
         checker.check(big_cmd)
-    except (BlocklistedCommandError, MemoryError):
-        pass

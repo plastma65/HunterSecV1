@@ -53,8 +53,7 @@ class SandboxSettings(BaseSettings):
 
 
 class SafetySettings(BaseSettings):
-    """Safety-layer toggles. Most are intentionally non-configurable to runtime —
-    only paths and thresholds are exposed."""
+    """Safety-layer toggles — only paths and thresholds are exposed."""
 
     model_config = SettingsConfigDict(env_prefix="HUNTERSEC_SAFETY_", extra="ignore")
 

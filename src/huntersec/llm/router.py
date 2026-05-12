@@ -115,7 +115,7 @@ class LLMRouter:
                 last_exc = exc
                 continue  # try next provider
             except LLMError as exc:
-                log.error("llm.router.provider_error", provider_index=idx, error=str(exc))
+                log.exception("llm.router.provider_error", provider_index=idx, error=str(exc))
                 raise
 
             self._tokens_used += response.total_tokens

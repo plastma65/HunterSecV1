@@ -100,7 +100,7 @@ class SandboxExecutor:
             "no-new-privileges",
             "--read-only",
             "--tmpfs",
-            "/tmp:noexec,nosuid,size=256m",
+            "/tmp:noexec,nosuid,size=256m",  # noqa: S108
             "--user",
             "huntersec",
             s.image,
@@ -110,7 +110,7 @@ class SandboxExecutor:
     async def run(
         self,
         command: str,
-        timeout: int | None = None,
+        timeout: int | None = None,  # noqa: ASYNC109
     ) -> ExecutionResult:
         """Run a command inside the Docker sandbox.
 
@@ -151,7 +151,7 @@ class SandboxExecutor:
 
         start = time.monotonic()
         try:
-            proc = await asyncio.create_subprocess_exec(  # noqa: S603,S607
+            proc = await asyncio.create_subprocess_exec(
                 *docker_argv,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
@@ -161,12 +161,12 @@ class SandboxExecutor:
                     proc.communicate(),
                     timeout=float(effective_timeout),
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError as exc:
                 proc.kill()
                 await proc.communicate()  # drain pipes to prevent zombie
                 raise SandboxTimeoutError(
                     f"Command timed out after {effective_timeout}s: {command!r}"
-                )
+                ) from exc
         except (SandboxError, SandboxTimeoutError):
             raise
         except Exception as exc:

@@ -116,13 +116,13 @@ class SafetyFilter:
             )
             log.warning("safety.deny.target", target=target, reason=str(exc))
             return SafetyDecision(allowed=False, reason=str(exc), audit_event=event)
-        except Exception as exc:  # noqa: BLE001 — fail-closed: unexpected errors → deny
+        except Exception as exc:
             reason = f"Unexpected error during target check: {exc!r}"
             event = self._audit.log_event(
                 "safety.error.target",
                 {"target": target, "reason": reason},
             )
-            log.error("safety.error.target", target=target, exc=repr(exc))
+            log.exception("safety.error.target", target=target, exc=repr(exc))
             return SafetyDecision(allowed=False, reason=reason, audit_event=event)
 
         event = self._audit.log_event("safety.allow.target", {"target": target})
@@ -167,13 +167,13 @@ class SafetyFilter:
                 reason=str(exc),
             )
             return SafetyDecision(allowed=False, reason=str(exc), audit_event=event)
-        except Exception as exc:  # noqa: BLE001 — fail-closed: unexpected errors → deny
+        except Exception as exc:
             reason = f"Unexpected error during command check: {exc!r}"
             event = self._audit.log_event(
                 "safety.error.command",
                 {"command": command, "target": target, "reason": reason},
             )
-            log.error("safety.error.command", command=command, target=target, exc=repr(exc))
+            log.exception("safety.error.command", command=command, target=target, exc=repr(exc))
             return SafetyDecision(allowed=False, reason=reason, audit_event=event)
 
         event = self._audit.log_event(

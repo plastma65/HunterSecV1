@@ -102,7 +102,7 @@ class OpenAIProvider:
             log.warning("llm.openai.rate_limit", model=selected_model)
             raise LLMRateLimitError(f"OpenAI rate limit: {exc}") from exc
         except openai.APIError as exc:
-            log.error("llm.openai.api_error", model=selected_model, error=str(exc))
+            log.exception("llm.openai.api_error", model=selected_model, error=str(exc))
             raise LLMError(f"OpenAI API error: {exc}") from exc
 
         choice = response.choices[0]

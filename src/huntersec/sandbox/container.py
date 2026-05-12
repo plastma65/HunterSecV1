@@ -80,7 +80,7 @@ class ManagedContainer:
             "no-new-privileges",
             "--read-only",
             "--tmpfs",
-            "/tmp:noexec,nosuid,size=256m",
+            "/tmp:noexec,nosuid,size=256m",  # noqa: S108
             "--user",
             "huntersec",
         ]
@@ -101,7 +101,7 @@ class ManagedContainer:
         """
         argv = self._build_start_argv()
         try:
-            proc = await asyncio.create_subprocess_exec(  # noqa: S603,S607
+            proc = await asyncio.create_subprocess_exec(
                 *argv,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
@@ -131,7 +131,7 @@ class ManagedContainer:
             return
         cid = self._container_id
         try:
-            proc = await asyncio.create_subprocess_exec(  # noqa: S603,S607
+            proc = await asyncio.create_subprocess_exec(
                 "docker",
                 "rm",
                 "-f",

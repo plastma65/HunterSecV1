@@ -5,9 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock
 
-import pytest
-
-from huntersec.exceptions import BlocklistedCommandError, OutOfScopeError, RateLimitExceededError
 from huntersec.safety.audit import AuditLogger
 from huntersec.safety.blocklist import BlocklistChecker
 from huntersec.safety.filter import SafetyFilter

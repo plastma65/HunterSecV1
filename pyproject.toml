@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
 authors = [
-    { name = "Lozens", email = "trantuananh.businessman@gmail.com" },
+    { name = "plastma65", email = "plastma65@gmail.com" },
 ]
 keywords = ["security", "pentest", "red-team", "ctf", "ai-agent", "llm", "langgraph"]
 classifiers = [
@@ -91,11 +91,11 @@ docs = [
 hunter = "huntersec.cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/Lozens/HunterSecV1"
-Documentation = "https://lozens.github.io/HunterSecV1/"
-Repository = "https://github.com/Lozens/HunterSecV1.git"
-Issues = "https://github.com/Lozens/HunterSecV1/issues"
-Changelog = "https://github.com/Lozens/HunterSecV1/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/plastma65/HunterSecV1"
+Documentation = "https://plastma65.github.io/HunterSecV1/"
+Repository = "https://github.com/plastma65/HunterSecV1.git"
+Issues = "https://github.com/plastma65/HunterSecV1/issues"
+Changelog = "https://github.com/plastma65/HunterSecV1/blob/main/CHANGELOG.md"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Hatch
@@ -139,6 +139,7 @@ select = [
 ignore = [
     "D100",  # missing module docstring (allowed for tests)
     "D104",  # missing package docstring
+    "D107",  # missing docstring in __init__ (Args documented in class docstring per Google style)
     "D203",  # one-blank-line-before-class (conflicts with D211)
     "D213",  # multi-line-summary-second-line (conflicts with D212)
     "PLR0913", # too many arguments — sometimes necessary in adapters
@@ -146,8 +147,11 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101", "D", "PLR2004"]
+"tests/**/*.py" = ["S101", "D", "PLR2004", "PLC0415", "BLE001"]
 "src/huntersec/**/__init__.py" = ["F401"]
+"src/huntersec/cli/**/*.py" = ["B008", "PLC0415"]
+"src/huntersec/llm/anthropic.py" = ["PLC0415"]
+"src/huntersec/llm/openai_provider.py" = ["PLC0415"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

@@ -3,13 +3,11 @@
 from __future__ import annotations
 
 import asyncio
-import time
 
 import pytest
 
 from huntersec.exceptions import RateLimitExceededError
 from huntersec.safety.ratelimit import RateLimiter, _TokenBucket
-
 
 # ── TokenBucket unit tests ────────────────────────────────────────────────────
 

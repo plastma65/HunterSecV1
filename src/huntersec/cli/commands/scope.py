@@ -4,17 +4,22 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import structlog
 import typer
 
+from huntersec.exceptions import OutOfScopeError, ScopeNotConfiguredError
+from huntersec.safety.scope import ScopeValidator
 from huntersec.settings import SafetySettings
 
 app = typer.Typer(help="Inspect and validate the active scope configuration.")
+
+log: structlog.stdlib.BoundLogger = structlog.get_logger("cli.scope.check")
 
 
 @app.command("check")
 def check(
     target: str = typer.Argument(..., help="IP, hostname, or URL to check."),
-    scope_file: Path = typer.Option(  # noqa: B008
+    scope_file: Path = typer.Option(
         None,
         "--scope",
         "-s",
@@ -28,13 +33,6 @@ def check(
 
     Exits 0 if in scope, 1 if out of scope, 2 if the scope file is missing.
     """
-    import structlog
-
-    from huntersec.exceptions import OutOfScopeError, ScopeNotConfiguredError
-    from huntersec.safety.scope import ScopeValidator
-
-    log: structlog.stdlib.BoundLogger = structlog.get_logger("cli.scope.check")
-
     settings = SafetySettings()
     resolved_scope = scope_file or settings.scope_file
 
