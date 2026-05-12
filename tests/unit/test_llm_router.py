@@ -90,6 +90,7 @@ async def test_llm_router_raises_budget_exceeded_before_call() -> None:
 
 async def test_llm_router_falls_back_on_rate_limit() -> None:
     """Primary rate-limits → fallback provider is used."""
+
     class _RateLimitedProvider:
         async def complete(
             self, messages: list[ChatMessage], model: str | None = None
@@ -116,6 +117,7 @@ async def test_llm_router_raises_rate_limit_when_all_providers_fail() -> None:
 
 async def test_llm_router_does_not_fallback_on_generic_llm_error() -> None:
     """Non-rate-limit errors should propagate immediately, no fallback."""
+
     class _BrokenProvider:
         async def complete(
             self, messages: list[ChatMessage], model: str | None = None

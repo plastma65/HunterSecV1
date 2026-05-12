@@ -85,8 +85,7 @@ def run(
 
     if not execute:
         typer.secho(
-            "\n[DRY-RUN] Safety checks passed. "
-            "Re-run with --execute to launch the agent.\n",
+            "\n[DRY-RUN] Safety checks passed. Re-run with --execute to launch the agent.\n",
             fg=typer.colors.YELLOW,
         )
         typer.echo(f"  Target  : {target}")

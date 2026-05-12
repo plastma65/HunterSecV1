@@ -34,13 +34,13 @@ class BlocklistFile(BaseModel):
 # These are baked into the binary even if the YAML file is missing/empty.
 # They cannot be turned off via config — only extended.
 BAKED_IN_PATTERNS: tuple[str, ...] = (
-    r"\brm\s+-rf\s+/(?!\S)",          # rm -rf / (whole root)
-    r"\brm\s+-rf\s+~(?:/|\s|$)",      # rm -rf ~
+    r"\brm\s+-rf\s+/(?!\S)",  # rm -rf / (whole root)
+    r"\brm\s+-rf\s+~(?:/|\s|$)",  # rm -rf ~
     r"\bdd\s+if=/dev/(?:zero|random|urandom)\s+of=/dev/sd[a-z]",  # disk wipe
     r":\(\)\s*\{\s*:\|\:\&\s*\}\s*;:",  # classic fork bomb
-    r"mkfs\.[a-z0-9]+\s+/dev/",       # format disk
-    r">\s*/dev/sd[a-z]",              # overwrite block device
-    r"chmod\s+-R\s+(?:000|777)\s+/", # nuke perms on root
+    r"mkfs\.[a-z0-9]+\s+/dev/",  # format disk
+    r">\s*/dev/sd[a-z]",  # overwrite block device
+    r"chmod\s+-R\s+(?:000|777)\s+/",  # nuke perms on root
     r"\bshred\s+/dev/",
     # DDoS / amplification heuristics
     r"hping3\s.*\s--flood",
@@ -112,11 +112,7 @@ class BlocklistChecker:
             return
         binary = Path(tokens[0]).name
         if binary in self._binaries:
-            raise BlocklistedCommandError(
-                f"Binary {binary!r} is in the forbidden binaries list."
-            )
+            raise BlocklistedCommandError(f"Binary {binary!r} is in the forbidden binaries list.")
         for tok in tokens[1:]:
             if tok in self._flags:
-                raise BlocklistedCommandError(
-                    f"Flag {tok!r} is in the forbidden flags list."
-                )
+                raise BlocklistedCommandError(f"Flag {tok!r} is in the forbidden flags list.")

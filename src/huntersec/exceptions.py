@@ -14,6 +14,7 @@ class HuntersecError(Exception):
 
 # ─── Safety ────────────────────────────────────────────────────────────────
 
+
 class SafetyViolationError(HuntersecError):
     """Base class for any safety control violation. Never silently swallow."""
 
@@ -36,6 +37,7 @@ class ScopeNotConfiguredError(SafetyViolationError):
 
 # ─── Sandbox ───────────────────────────────────────────────────────────────
 
+
 class SandboxError(HuntersecError):
     """Base for sandbox / Docker execution failures."""
 
@@ -49,6 +51,7 @@ class SandboxTimeoutError(SandboxError):
 
 
 # ─── LLM ───────────────────────────────────────────────────────────────────
+
 
 class LLMError(HuntersecError):
     """Base for LLM-related failures."""
@@ -68,6 +71,7 @@ class LLMValidationError(LLMError):
 
 # ─── Tools ─────────────────────────────────────────────────────────────────
 
+
 class ToolError(HuntersecError):
     """Base for tool wrapper failures."""
 
@@ -81,6 +85,7 @@ class ToolInputError(ToolError):
 
 
 # ─── Config ────────────────────────────────────────────────────────────────
+
 
 class ConfigError(HuntersecError):
     """Configuration file is invalid or missing required keys."""

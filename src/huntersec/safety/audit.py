@@ -97,9 +97,7 @@ class AuditLogger:
         with self._lock:
             self._seq += 1
             row = {
-                "ts": datetime.now(UTC).isoformat(timespec="milliseconds").replace(
-                    "+00:00", "Z"
-                ),
+                "ts": datetime.now(UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
                 "session_id": self._session_id,
                 "seq": self._seq,
                 "event": event,

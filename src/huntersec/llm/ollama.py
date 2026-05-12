@@ -97,8 +97,7 @@ class OllamaProvider:
                 response = await client.post(url, json=payload)
         except httpx.ConnectError as exc:
             raise LLMError(
-                f"Cannot connect to Ollama at {self._host}. "
-                "Is the server running? (ollama serve)"
+                f"Cannot connect to Ollama at {self._host}. Is the server running? (ollama serve)"
             ) from exc
         except httpx.TimeoutException as exc:
             raise LLMError(f"Ollama request timed out after {self._timeout}s") from exc
@@ -106,9 +105,7 @@ class OllamaProvider:
         if response.status_code == 429:  # noqa: PLR2004
             raise LLMRateLimitError("Ollama rate limit (429).")
         if response.status_code != 200:  # noqa: PLR2004
-            raise LLMError(
-                f"Ollama returned HTTP {response.status_code}: {response.text[:200]}"
-            )
+            raise LLMError(f"Ollama returned HTTP {response.status_code}: {response.text[:200]}")
 
         data: dict[str, Any] = response.json()
         content = data.get("message", {}).get("content", "")
