@@ -2,8 +2,7 @@
 
 > **Autonomous offensive-security agent — ethical, opensource, multi-LLM.**
 
-[![CI](https://github.com/Lozens/HunterSecV1/actions/workflows/ci.yml/badge.svg)](https://github.com/Lozens/HunterSecV1/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/Lozens/HunterSecV1/actions/workflows/codeql.yml/badge.svg)](https://github.com/Lozens/HunterSecV1/actions/workflows/codeql.yml)
+[![CI](https://github.com/plastma65/HunterSecV1/actions/workflows/ci.yml/badge.svg)](https://github.com/plastma65/HunterSecV1/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -31,7 +30,7 @@ HunterSecV1 là agent AI tự động giải các bài lab pentest, CTF, và h�
 ```bash
 # Yêu cầu: Python 3.11+, Docker, uv (https://github.com/astral-sh/uv)
 
-git clone https://github.com/Lozens/HunterSecV1.git
+git clone https://github.com/plastma65/HunterSecV1.git
 cd HunterSecV1
 make setup            # cài deps + pre-commit hooks
 make sandbox          # build Kali Docker image (lần đầu ~ 5 phút)
@@ -79,7 +78,7 @@ Roadmap chi tiết: [`docs/plan.md`](docs/plan.md).
 
 ## Contributing
 
-Xem [`CONTRIBUTING.md`](CONTRIBUTING.md) và [`CLAUDE.md`](CLAUDE.md). PR welcome, đặc biệt:
+Xem [`CONTRIBUTING.md`](CONTRIBUTING.md) để biết quy trình đóng góp. PR welcome, đặc biệt:
 
 - Tool wrappers mới (nmap-like CLI tool wrappers)
 - LLM provider adapters
@@ -115,4 +114,4 @@ This software is provided "as is", without warranty. Authors and contributors ar
 
 ---
 
-**Maintainer:** [@Lozens](https://github.com/Lozens) · trantuananh.businessman@gmail.com
+**Maintainer:** [@plastma65](https://github.com/plastma65) · trantuananh.businessman@gmail.com
