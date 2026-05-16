@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from huntersec.core.state import AgentState, Finding, ToolOutput
 from huntersec.reporting.markdown import MarkdownReporter
 
@@ -119,7 +117,6 @@ def test_reporter_generate_includes_timeline() -> None:
 
 
 def test_reporter_generate_nmap_port_table() -> None:
-    import xml.etree.ElementTree as ET
 
     nmap_xml = """\
 <?xml version="1.0"?><nmaprun scanner="nmap" version="7.94">
@@ -128,14 +125,10 @@ def test_reporter_generate_nmap_port_table() -> None:
 <state state="open"/><service name="http" product="Apache" version="2.4.41"/>
 </port></ports></host></nmaprun>"""
 
+    from huntersec.tools.base import ToolResult
     from huntersec.tools.recon.nmap import NmapTool
 
     tool = NmapTool()
-    result_obj = type(
-        "R", (), {"stdout": nmap_xml, "stderr": "", "exit_code": 0, "duration_ms": 0}
-    )()
-    from huntersec.tools.base import ToolResult
-
     parsed = tool.parse_output(ToolResult(stdout=nmap_xml, stderr="", exit_code=0, duration_ms=0))
 
     outputs = [

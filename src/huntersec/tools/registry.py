@@ -89,21 +89,36 @@ class ToolRegistry:
 
 
 def default_registry(executor: SandboxExecutor) -> ToolRegistry:
-    """Create a :class:`ToolRegistry` pre-populated with the 5 default recon tools.
+    """Create a :class:`ToolRegistry` pre-populated with the default recon tools.
+
+    Includes the 5 Phase 1 wrappers (nmap, gobuster, ffuf, whatweb, httpx)
+    plus the Phase 2 additions (enum4linux-ng, searchsploit, curl).
 
     Args:
         executor: Sandbox executor passed to each tool.
 
     Returns:
-        Populated :class:`ToolRegistry` with nmap, gobuster, ffuf, whatweb, httpx.
+        Populated :class:`ToolRegistry`.
     """
+    from huntersec.tools.recon.curl_tool import CurlTool
+    from huntersec.tools.recon.enum4linux import Enum4linuxTool
     from huntersec.tools.recon.ffuf import FfufTool
     from huntersec.tools.recon.gobuster import GobusterTool
     from huntersec.tools.recon.httpx_tool import HttpxTool
     from huntersec.tools.recon.nmap import NmapTool
+    from huntersec.tools.recon.searchsploit import SearchsploitTool
     from huntersec.tools.recon.whatweb import WhatwebTool
 
     registry = ToolRegistry(executor)
-    for tool in [NmapTool(), GobusterTool(), FfufTool(), WhatwebTool(), HttpxTool()]:
+    for tool in [
+        NmapTool(),
+        GobusterTool(),
+        FfufTool(),
+        WhatwebTool(),
+        HttpxTool(),
+        Enum4linuxTool(),
+        SearchsploitTool(),
+        CurlTool(),
+    ]:
         registry.register(tool)
     return registry

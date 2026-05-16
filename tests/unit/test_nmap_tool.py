@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
-import pytest
-
 from huntersec.sandbox.mock import MockSandboxExecutor
 from huntersec.tools.base import ToolInput, ToolResult
 from huntersec.tools.recon.nmap import NmapTool

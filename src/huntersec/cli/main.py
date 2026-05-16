@@ -12,8 +12,10 @@ from __future__ import annotations
 
 import typer
 
+from huntersec.cli.commands.htb import app as htb_app
 from huntersec.cli.commands.run import run
 from huntersec.cli.commands.scope import app as scope_app
+from huntersec.cli.commands.thm import app as thm_app
 from huntersec.cli.commands.version import version
 
 app = typer.Typer(
@@ -26,6 +28,8 @@ app = typer.Typer(
 app.command("run")(run)
 app.command("version")(version)
 app.add_typer(scope_app, name="scope")
+app.add_typer(htb_app, name="htb")
+app.add_typer(thm_app, name="thm")
 
 
 if __name__ == "__main__":

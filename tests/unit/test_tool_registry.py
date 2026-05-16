@@ -116,10 +116,14 @@ async def test_tool_registry_run_records_call_history() -> None:
 # ── default_registry ───────────────────────────────────────────────────────────
 
 
-def test_default_registry_contains_five_tools() -> None:
+def test_default_registry_contains_recon_tools() -> None:
+    """Default registry has the Phase 1 recon tools plus Phase 2 additions."""
     registry = default_registry(MockSandboxExecutor())
-    tools = registry.list_tools()
-    assert set(tools) == {"nmap", "gobuster", "ffuf", "whatweb", "httpx"}
+    tools = set(registry.list_tools())
+    phase1 = {"nmap", "gobuster", "ffuf", "whatweb", "httpx"}
+    phase2 = {"enum4linux-ng", "searchsploit", "curl"}
+    assert phase1 <= tools, f"missing Phase 1 tools: {phase1 - tools}"
+    assert phase2 <= tools, f"missing Phase 2 tools: {phase2 - tools}"
 
 
 def test_default_registry_nmap_not_none() -> None:

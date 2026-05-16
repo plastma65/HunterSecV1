@@ -16,7 +16,6 @@ from huntersec.core.state import (
     ValidationResponse,
 )
 
-
 # ── PlanStep TypedDict ─────────────────────────────────────────────────────────
 
 
@@ -54,7 +53,9 @@ def test_plan_step_model_defaults_empty_args() -> None:
 
 
 def test_plan_step_model_rejects_missing_required_fields() -> None:
-    with pytest.raises(Exception):
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
         PlanStepModel.model_validate({})
 
 
@@ -118,7 +119,9 @@ def test_finding_model_validates() -> None:
 
 
 def test_finding_model_rejects_invalid_severity() -> None:
-    with pytest.raises(Exception):
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
         FindingModel.model_validate(
             {"category": "x", "severity": "ultra", "title": "t", "detail": "", "evidence": ""}
         )

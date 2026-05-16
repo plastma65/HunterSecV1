@@ -158,6 +158,8 @@ ignore = [
 "src/huntersec/llm/openai_provider.py" = ["PLC0415"]
 "src/huntersec/tools/registry.py" = ["PLC0415"]
 "src/huntersec/core/session.py" = ["PLC0415"]
+"src/huntersec/solvers/htb/solver.py" = ["PLC0415"]
+"src/huntersec/memory/knowledge.py" = ["PLC0415"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
