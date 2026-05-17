@@ -115,7 +115,17 @@ class WebAgent:
             )
             return findings
 
-        await self._run_gobuster(target, findings)
+        if recon.get("gobuster_ran"):
+            # ReconAgent already ran gobuster against this target. Reuse its
+            # results rather than burning a second wordlist pass — same scope,
+            # same wordlist, doubles RoE noise on the target for no new data.
+            log.info("subagent.web.gobuster.reuse", target=target)
+            for path in recon.get("directories", []) or []:
+                findings["directories"].append(path)
+                if path in _INTERESTING_FILES or path.rstrip("/") in _INTERESTING_FILES:
+                    findings["interesting_files"].append(path)
+        else:
+            await self._run_gobuster(target, findings)
         self._analyse_existing_data(recon, findings)
 
         self._audit.log_event(
@@ -152,9 +162,7 @@ class WebAgent:
             if path in _INTERESTING_FILES or path.rstrip("/") in _INTERESTING_FILES:
                 findings["interesting_files"].append(path)
 
-    def _analyse_existing_data(
-        self, recon: ReconSummary, findings: WebFindings
-    ) -> None:
+    def _analyse_existing_data(self, recon: ReconSummary, findings: WebFindings) -> None:
         """Static heuristics on tech stack → potential_vulns hints."""
         for svc in recon.get("web_services", []):
             techs = svc.get("tech_stack", []) or []

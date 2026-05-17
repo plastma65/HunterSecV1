@@ -46,9 +46,7 @@ class FfufTool(BaseTool):
             "wordlist",
             "/usr/share/seclists/Discovery/Web-Content/common.txt",
         )
-        return (
-            f"ffuf -u {target}/FUZZ -w {wordlist} -s -noninteractive"
-        )
+        return f"ffuf -u {target}/FUZZ -w {wordlist} -s -noninteractive"
 
     def parse_output(self, result: ToolResult) -> dict[str, Any]:
         """Parse ffuf text output into discovered paths with status codes.

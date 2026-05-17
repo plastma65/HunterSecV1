@@ -82,9 +82,7 @@ class KnowledgeRetriever:
         # Global search across all sessions
         return self._store.search_findings(query, limit=limit)
 
-    def _semantic_filter(
-        self, query: str, findings: list[Finding], limit: int
-    ) -> list[Finding]:
+    def _semantic_filter(self, query: str, findings: list[Finding], limit: int) -> list[Finding]:
         """Rank findings by cosine similarity to query embedding.
 
         Args:

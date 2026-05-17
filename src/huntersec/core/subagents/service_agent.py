@@ -122,9 +122,7 @@ class ServiceAgent:
         elif handler == "postgres":
             self._enum_postgres(target, port, findings)
 
-    async def _enum_ftp(
-        self, target: str, port: str, findings: ServiceFindings
-    ) -> None:
+    async def _enum_ftp(self, target: str, port: str, findings: ServiceFindings) -> None:
         # Anonymous FTP probe — read-only LIST.  Uses curl since it is
         # already in the registry; falls back gracefully when missing.
         command = f"curl -s --max-time 10 ftp://anonymous:anonymous@{target}:{port}/"
@@ -149,26 +147,20 @@ class ServiceAgent:
         if result.exit_code == 0:
             findings["anonymous_access"].append(f"ftp:{port}")
 
-    def _enum_ssh(
-        self, target: str, port: str, port_info: dict, findings: ServiceFindings
-    ) -> None:
+    def _enum_ssh(self, target: str, port: str, port_info: dict, findings: ServiceFindings) -> None:
         findings["service_details"][f"ssh:{port}"] = {
             "banner": port_info.get("version", ""),
             "note": "version_only — no auth attempt",
         }
 
-    def _enum_http(
-        self, target: str, port: str, handler: str, findings: ServiceFindings
-    ) -> None:
+    def _enum_http(self, target: str, port: str, handler: str, findings: ServiceFindings) -> None:
         scheme = "https" if handler == "https" else "http"
         findings["service_details"][f"{handler}:{port}"] = {
             "url": f"{scheme}://{target}:{port}/",
             "note": "delegate to WebAgent",
         }
 
-    async def _enum_smb(
-        self, target: str, port: str, findings: ServiceFindings
-    ) -> None:
+    async def _enum_smb(self, target: str, port: str, findings: ServiceFindings) -> None:
         if "enum4linux-ng" not in self._registry.list_tools():
             findings["service_details"][f"smb:{port}"] = {"status": "no_enum4linux_tool"}
             return
@@ -178,9 +170,7 @@ class ServiceAgent:
             findings["errors"].append(f"smb probe blocked: {decision['reason']}")
             return
         try:
-            result = await self._registry.run(
-                "enum4linux-ng", ToolInput(target=target)
-            )
+            result = await self._registry.run("enum4linux-ng", ToolInput(target=target))
         except Exception as exc:  # noqa: BLE001
             findings["errors"].append(f"smb probe failed: {exc!r}")
             return
@@ -192,16 +182,12 @@ class ServiceAgent:
         if parsed.get("shares"):
             findings["anonymous_access"].append(f"smb:{port}")
 
-    def _enum_mysql(
-        self, target: str, port: str, findings: ServiceFindings
-    ) -> None:
+    def _enum_mysql(self, target: str, port: str, findings: ServiceFindings) -> None:
         findings["service_details"][f"mysql:{port}"] = {
             "note": "anonymous MySQL probe not implemented — manual check required"
         }
 
-    def _enum_postgres(
-        self, target: str, port: str, findings: ServiceFindings
-    ) -> None:
+    def _enum_postgres(self, target: str, port: str, findings: ServiceFindings) -> None:
         findings["service_details"][f"postgres:{port}"] = {
             "note": "anonymous PostgreSQL probe not implemented — manual check required"
         }

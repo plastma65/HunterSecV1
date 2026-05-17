@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, NotRequired, TypedDict
 
 import structlog
 
@@ -29,6 +29,12 @@ class ReconSummary(TypedDict):
     hostnames: list[str]
     os_guess: str | None
     errors: list[str]
+    # Paths discovered by gobuster during recon; consumed by WebAgent so the
+    # same wordlist scan isn't repeated downstream. Marked NotRequired to
+    # keep backwards compatibility with summaries built before this field
+    # existed (e.g. legacy fixtures).
+    directories: NotRequired[list[str]]
+    gobuster_ran: NotRequired[bool]
 
 
 _WEB_PORTS = {"80", "443", "8000", "8080", "8443"}
@@ -136,8 +142,7 @@ class ReconAgent:
                         "port": port_info.get("port", ""),
                         "protocol": port_info.get("protocol", "tcp"),
                         "service": svc.get("name", ""),
-                        "version": (svc.get("product", "") + " "
-                                    + svc.get("version", "")).strip(),
+                        "version": (svc.get("product", "") + " " + svc.get("version", "")).strip(),
                     }
                 )
 
@@ -203,12 +208,23 @@ class ReconAgent:
             summary["errors"].append(f"gobuster blocked: {decision['reason']}")
             return
         try:
-            await self._registry.run("gobuster", ToolInput(target=web_target))
+            result = await self._registry.run("gobuster", ToolInput(target=web_target))
         except Exception as exc:  # noqa: BLE001
             summary["errors"].append(f"gobuster failed: {exc!r}")
+            return
+
+        # Cache results on the summary so WebAgent doesn't re-run gobuster.
+        summary["gobuster_ran"] = True
+        directories = summary.setdefault("directories", [])
+        parsed = result.parsed or {}
+        for entry in parsed.get("paths", []):
+            path = entry.get("path", "")
+            if path:
+                directories.append(path)
 
     def _has_web_port(self, summary: ReconSummary) -> bool:
-        if not summary["open_ports"]:
-            # No nmap data — be optimistic and probe anyway
-            return True
+        # No nmap data → no evidence of a web port → skip web tools. We used
+        # to "be optimistic and probe anyway", which produced synthetic
+        # ``web_services`` entries on machines that didn't actually expose
+        # HTTP — see E2E test report Issue 3.
         return any(str(p.get("port")) in _WEB_PORTS for p in summary["open_ports"])

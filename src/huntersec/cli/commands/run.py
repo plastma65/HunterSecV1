@@ -44,6 +44,15 @@ def run(
         "-o",
         help="Assessment objective: recon | exploit | ctf.",
     ),
+    network: str = typer.Option(
+        "bridge",
+        "--network",
+        "-n",
+        help=(
+            "Sandbox network mode (bridge|internal|none|host). "
+            "Use 'host' on Linux/WSL2 to reach a host-side VPN tunnel."
+        ),
+    ),
 ) -> None:
     """Run an autonomous security assessment against TARGET.
 
@@ -106,11 +115,22 @@ def run(
         f"\n[LIVE] Starting agent against {target!r} ...\n",
         fg=typer.colors.GREEN,
     )
+    if network == "host":
+        typer.secho(
+            "[WARN] host network mode: container shares host network. "
+            "VPN tunnels on the host (e.g. tun0) will be accessible. "
+            "Linux/WSL2 only.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
     try:
         from huntersec.core.session import Session
-        from huntersec.settings import Settings
+        from huntersec.settings import SandboxSettings, Settings
 
-        app_settings = Settings(safety=SafetySettings(scope_file=scope))
+        app_settings = Settings(
+            safety=SafetySettings(scope_file=scope),
+            sandbox=SandboxSettings(network_mode=network),  # type: ignore[arg-type]
+        )
         session = Session(
             target=target,
             scope_file=scope,
@@ -119,7 +139,7 @@ def run(
             provider=provider,
         )
         report_path = asyncio.run(session.run())
-        typer.secho(f"\n✓ Report saved: {report_path}", fg=typer.colors.GREEN)
+        typer.secho(f"\n[OK] Report saved: {report_path}", fg=typer.colors.GREEN)
     except (ScopeNotConfiguredError, OutOfScopeError) as exc:
         typer.secho(f"ERROR: {exc}", fg=typer.colors.RED, err=True)
         raise typer.Exit(1) from exc

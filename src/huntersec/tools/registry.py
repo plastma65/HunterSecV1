@@ -54,8 +54,7 @@ class ToolRegistry:
         """
         if name not in self._tools:
             raise ToolNotFoundError(
-                f"Tool {name!r} is not registered. "
-                f"Available: {sorted(self._tools)}"
+                f"Tool {name!r} is not registered. Available: {sorted(self._tools)}"
             )
         return self._tools[name]
 

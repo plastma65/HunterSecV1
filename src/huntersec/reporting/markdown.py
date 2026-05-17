@@ -37,8 +37,10 @@ def _format_nmap_table(tool_outputs: list[ToolOutput]) -> str:
     if not nmap_outputs:
         return "_No nmap output recorded._\n"
 
-    rows: list[str] = ["| Port | Protocol | State | Service | Version |",
-                        "|------|----------|-------|---------|---------|"]
+    rows: list[str] = [
+        "| Port | Protocol | State | Service | Version |",
+        "|------|----------|-------|---------|---------|",
+    ]
     found_any = False
     for out in nmap_outputs:
         parsed: dict[str, Any] = out.get("parsed") or {}

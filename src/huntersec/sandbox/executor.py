@@ -80,6 +80,11 @@ class SandboxExecutor:
             Complete argv list suitable for :func:`asyncio.create_subprocess_exec`.
         """
         s = self._settings
+        # WARNING: network_mode="host" bypasses Docker's network isolation and
+        # shares the host's namespace (interfaces, loopback, routing table). It
+        # is required on Linux/WSL2 to reach a host-side OpenVPN tunnel (HTB,
+        # THM) from inside the container, but it disables a key sandbox
+        # boundary. Not supported on Docker Desktop for Windows/macOS.
         return [
             "docker",
             "run",

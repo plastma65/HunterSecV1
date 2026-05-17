@@ -44,10 +44,7 @@ def _extract_json(text: str) -> Any:
 def _format_findings_summary(findings: list[Finding]) -> str:
     if not findings:
         return "No previous findings."
-    lines = [
-        f"- [{f['severity'].upper()}] {f['title']}: {f['detail'][:120]}"
-        for f in findings
-    ]
+    lines = [f"- [{f['severity'].upper()}] {f['title']}: {f['detail'][:120]}" for f in findings]
     return "\n".join(lines)
 
 

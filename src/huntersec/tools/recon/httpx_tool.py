@@ -34,9 +34,7 @@ class HttpxTool(BaseTool):
             httpx command string producing JSONL to stdout.
         """
         target = inp.target
-        return (
-            f"httpx -u {target} -json -silent -tech-detect -title -status-code"
-        )
+        return f"httpx -u {target} -json -silent -tech-detect -title -status-code"
 
     def parse_output(self, result: ToolResult) -> dict[str, Any]:
         """Parse httpx JSONL output into service information.

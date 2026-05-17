@@ -51,6 +51,18 @@ hunter htb solve --target 10.10.11.42
 hunter ctf solve --category web --challenge ./chal.tar.gz
 ```
 
+### Running on Windows with HTB VPN
+
+Docker Desktop trên Windows không hỗ trợ `--network host`, nên sandbox
+container **không reach được HTB VPN** từ bridge mặc định. Hai phương án
+được hỗ trợ:
+
+1. **Chạy từ WSL2** (recommended): kết nối OpenVPN trong WSL2, dùng
+   `hunter htb solve ... --network host --execute`.
+2. **Chạy trên Linux host hoặc Linux VM**.
+
+Chi tiết: [`docs/htb-windows.md`](docs/htb-windows.md).
+
 ---
 
 ## Architecture (1-paragraph)

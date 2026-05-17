@@ -13,7 +13,13 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
 
+from huntersec.exceptions import ToolError
 from huntersec.sandbox.executor import ExecutionResult, SandboxExecutor
+
+# POSIX exit code emitted by /bin/sh when the requested binary is not on PATH.
+# We treat this as a hard configuration error (the sandbox image is missing a
+# tool the registry advertises) rather than silently returning empty output.
+_EXIT_COMMAND_NOT_FOUND = 127
 
 
 class ToolCategory(StrEnum):
@@ -31,8 +37,8 @@ class ToolCategory(StrEnum):
 class RiskLevel(StrEnum):
     """Risk level of running a tool against a target."""
 
-    PASSIVE = auto()    # no network packets sent to target
-    ACTIVE = auto()     # packets sent, detectable by IDS
+    PASSIVE = auto()  # no network packets sent to target
+    ACTIVE = auto()  # packets sent, detectable by IDS
     INTRUSIVE = auto()  # may crash services or modify target state
 
 
@@ -127,6 +133,12 @@ class BaseTool(ABC):
         """
         command = self.build_command(inp)
         raw: ExecutionResult = await executor.run(command, timeout=inp.timeout_seconds)
+        if raw["exit_code"] == _EXIT_COMMAND_NOT_FOUND:
+            raise ToolError(
+                f"Tool {self.name!r} not found in sandbox image "
+                f"(exit {_EXIT_COMMAND_NOT_FOUND}). Add it to "
+                f"docker/Dockerfile.kali and rebuild the image."
+            )
         result = ToolResult(
             stdout=raw["stdout"],
             stderr=raw["stderr"],

@@ -44,7 +44,10 @@ class SandboxSettings(BaseSettings):
 
     image: str = "huntersec/kali:latest"
     runtime: Literal["runc", "runsc"] = "runc"  # runsc = gVisor
-    network_mode: Literal["bridge", "internal", "none"] = "bridge"
+    # "host" shares the host's network namespace — required on Linux/WSL2
+    # when the host runs an OpenVPN tunnel (e.g. HTB / THM) that the bridge
+    # network cannot reach. NOT supported by Docker Desktop on Windows/macOS.
+    network_mode: Literal["bridge", "internal", "none", "host"] = "bridge"
     memory_limit: str = "2g"
     cpu_limit: float = 2.0
     pids_limit: int = 200

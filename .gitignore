@@ -106,4 +106,8 @@ desktop.ini
 # AI agent instruction files (not for public repo)
 CLAUDE.md
 docs/progress_report.md
+docs/e2e_test_report.md
+data/e2e_htb_three.log
+data/e2e_htb_three_v2.log
+data/tool_check.sh
 .claude/

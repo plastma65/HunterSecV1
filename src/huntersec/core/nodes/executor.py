@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 import structlog
 
 from huntersec.core.state import AgentState, ToolOutput
+from huntersec.exceptions import ToolError
 from huntersec.llm.base import sanitize_tool_output
 from huntersec.safety.audit import AuditLogger
 from huntersec.safety.filter import SafetyFilter
@@ -103,6 +104,29 @@ async def executor_node(
 
     try:
         result = await registry.run(tool_name, inp)
+    except ToolError as exc:
+        # ToolError covers "tool not found in image" (exit 127) and other
+        # configuration-shaped failures. Audit it under a dedicated event so
+        # operators can see at a glance which tools are missing — and skip the
+        # step instead of pretending it returned empty findings.
+        msg = str(exc)
+        is_missing = "not found in sandbox image" in msg
+        event = "tool.missing" if is_missing else "agent.step.error"
+        log.warning("executor.step.failed", tool=tool_name, error=msg)
+        audit.log_event(
+            event,
+            {
+                "session_id": state["session_id"],
+                "step_id": step["step_id"],
+                "tool": tool_name,
+                "error": msg,
+            },
+        )
+        return {
+            "current_step_index": new_index,
+            "status": "executing",
+            "error": f"tool_missing: {tool_name}" if is_missing else msg,
+        }
     except Exception as exc:  # noqa: BLE001
         log.warning("executor.step.failed", tool=tool_name, error=str(exc))
         audit.log_event(

@@ -32,20 +32,42 @@ def solve(
         "--execute",
         help="Run the solver. Omit for a dry-run that only validates scope.",
     ),
+    network: str = typer.Option(
+        "bridge",
+        "--network",
+        "-n",
+        help=(
+            "Sandbox network mode (bridge|internal|none|host). "
+            "Use 'host' on Linux/WSL2 to reach a host-side VPN tunnel."
+        ),
+    ),
 ) -> None:
     """Run the HTB recon/enum pipeline against TARGET."""
     if not execute:
         typer.secho(
-            f"[DRY-RUN] HTB solve dry-run — target {target!r} would be probed.",
+            f"[DRY-RUN] HTB solve dry-run - target {target!r} would be probed.",
             fg=typer.colors.YELLOW,
         )
         typer.echo(f"  Scope file : {scope}")
         return
 
+    from huntersec.settings import SafetySettings, SandboxSettings, Settings
     from huntersec.solvers.htb.solver import HTBSolver
 
+    if network == "host":
+        typer.secho(
+            "[WARN] host network mode: container shares host network. "
+            "HTB VPN (tun0) will be accessible. Linux/WSL2 only.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+
     try:
-        solver = HTBSolver(target_ip=target, scope_file=scope)
+        app_settings = Settings(
+            safety=SafetySettings(scope_file=scope),
+            sandbox=SandboxSettings(network_mode=network),  # type: ignore[arg-type]
+        )
+        solver = HTBSolver(target_ip=target, scope_file=scope, settings=app_settings)
     except (ScopeNotConfiguredError, OutOfScopeError) as exc:
         typer.secho(f"ERROR: {exc}", fg=typer.colors.RED, err=True)
         raise typer.Exit(1) from exc
@@ -58,4 +80,4 @@ def solve(
     typer.echo(f"User flag     : {result['user_flag']}")
     typer.echo(f"Root flag     : {result['root_flag']}")
     if result["report_path"]:
-        typer.secho(f"\n✓ Report saved: {result['report_path']}", fg=typer.colors.GREEN)
+        typer.secho(f"\n[OK] Report saved: {result['report_path']}", fg=typer.colors.GREEN)

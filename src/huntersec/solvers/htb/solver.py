@@ -108,9 +108,7 @@ class HTBSolver:
         self._target = target_ip
         self._scope_file = scope_file
         self._session_id = str(uuid.uuid4())
-        self._settings = settings or Settings(
-            safety=SafetySettings(scope_file=scope_file)
-        )
+        self._settings = settings or Settings(safety=SafetySettings(scope_file=scope_file))
 
         # Validate scope FIRST — no resources allocated otherwise.
         from huntersec.safety.scope import ScopeValidator
@@ -190,15 +188,15 @@ class HTBSolver:
         all_outputs: list[str] = []
 
         try:
-            recon: ReconSummary = await ReconAgent(
-                self._safety, self._registry, self._audit
-            ).run(self._target)
+            recon: ReconSummary = await ReconAgent(self._safety, self._registry, self._audit).run(
+                self._target
+            )
             steps_taken += 1
             all_outputs.append(self._dump_recon(recon))
 
-            web: WebFindings = await WebAgent(
-                self._safety, self._registry, self._audit
-            ).run(self._target, recon)
+            web: WebFindings = await WebAgent(self._safety, self._registry, self._audit).run(
+                self._target, recon
+            )
             steps_taken += 1
             all_outputs.append(self._dump_web(web))
 

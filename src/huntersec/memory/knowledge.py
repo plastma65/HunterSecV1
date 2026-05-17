@@ -177,8 +177,7 @@ _COMMON_VULNS_INLINE_SEED: list[dict[str, str]] = [
     },
     {
         "title": "SSRF — internal targets",
-        "content": "169.254.169.254 (cloud metadata), 127.0.0.1, "
-        "localhost, file:///etc/passwd.",
+        "content": "169.254.169.254 (cloud metadata), 127.0.0.1, localhost, file:///etc/passwd.",
         "source": "playbook:web",
     },
 ]
@@ -331,9 +330,7 @@ class KnowledgeBase:
                 (category,),
             ).fetchone()
         else:
-            row = self._conn.execute(
-                "SELECT COUNT(*) AS c FROM kb_snippets"
-            ).fetchone()
+            row = self._conn.execute("SELECT COUNT(*) AS c FROM kb_snippets").fetchone()
         return int(row["c"]) if row else 0
 
     def close(self) -> None:

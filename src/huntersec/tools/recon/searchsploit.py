@@ -56,10 +56,7 @@ class SearchsploitTool(BaseTool):
         entries: list[Any] = []
         if isinstance(data, dict):
             entries = (
-                data.get("RESULTS_EXPLOIT")
-                or data.get("results")
-                or data.get("EXPLOITS")
-                or []
+                data.get("RESULTS_EXPLOIT") or data.get("results") or data.get("EXPLOITS") or []
             )
         elif isinstance(data, list):
             entries = data
@@ -74,8 +71,7 @@ class SearchsploitTool(BaseTool):
                     "path": entry.get("Path") or entry.get("path", ""),
                     "type": entry.get("Type") or entry.get("type", ""),
                     "platform": entry.get("Platform") or entry.get("platform", ""),
-                    "date_published": entry.get("Date_Published")
-                    or entry.get("date", ""),
+                    "date_published": entry.get("Date_Published") or entry.get("date", ""),
                 }
             )
         return {"exploits": exploits}

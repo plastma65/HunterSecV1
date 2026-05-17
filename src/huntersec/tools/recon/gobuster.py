@@ -44,16 +44,10 @@ class GobusterTool(BaseTool):
         if not target.startswith("http"):
             target = f"http://{target}"
 
-        wordlist = inp.args.get(
-            "wordlist", "/usr/share/wordlists/dirb/common.txt"
-        )
+        wordlist = inp.args.get("wordlist", "/usr/share/wordlists/dirb/common.txt")
         if mode == "dns":
-            return (
-                f"gobuster dns -d {inp.target} -w {wordlist} --no-color -q"
-            )
-        return (
-            f"gobuster dir -u {target} -w {wordlist} --no-color -q"
-        )
+            return f"gobuster dns -d {inp.target} -w {wordlist} --no-color -q"
+        return f"gobuster dir -u {target} -w {wordlist} --no-color -q"
 
     def parse_output(self, result: ToolResult) -> dict[str, Any]:
         """Parse gobuster text output into a list of discovered paths.

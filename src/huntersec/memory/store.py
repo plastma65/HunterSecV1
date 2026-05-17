@@ -212,9 +212,7 @@ class MemoryStore:
 
     # ── Knowledge snippets ─────────────────────────────────────────────────────
 
-    def save_snippet(
-        self, content: str, source: str = "", session_id: str | None = None
-    ) -> int:
+    def save_snippet(self, content: str, source: str = "", session_id: str | None = None) -> int:
         """Save a free-form knowledge snippet.
 
         Args:
